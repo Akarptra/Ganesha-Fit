@@ -459,45 +459,122 @@ $nama_lengkap = $_SESSION['nama_lengkap'];
   </script>
 
   <script>
+    // Fungsi untuk menangani perubahan harga ketika memilih Personal Trainer
+    function updateTrainerOption() {
+        const personalTrainer = document.getElementById('flexRadioDefault1').checked; // True jika "Gunakan" dipilih
+        const type = document.querySelector('input[name="value"]:checked')?.value; // Jenis pengunjung (bulanan/harian)
+        let baseAmount = 0;
+        let personalTrainerFee = 0;
+
+        // Tentukan harga dasar berdasarkan jenis pengunjung
+        if (type === 'bulanan') {
+            baseAmount = 180000;
+            personalTrainerFee = personalTrainer ? 100000 : 0;
+        } else if (type === 'harian') {
+            baseAmount = 20000;
+            personalTrainerFee = personalTrainer ? 30000 : 0;
+        }
+
+        // Hitung total harga
+        const totalAmount = baseAmount + personalTrainerFee;
+
+        // Update field amount
+        document.getElementById('amount').value = totalAmount;
+    }
+
+    // Fungsi utama untuk mengatur tanggal, jenis pengunjung, dan harga dasar
     function updateDate(type) {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      const hh = String(today.getHours()).padStart(2, '0');
-      const min = String(today.getMinutes()).padStart(2, '0');
-      const sec = String(today.getSeconds()).padStart(2, '0');
-      const p = 'P'
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const hh = String(today.getHours()).padStart(2, '0');
+        const min = String(today.getMinutes()).padStart(2, '0');
+        const sec = String(today.getSeconds()).padStart(2, '0');
+        const p = 'P';
 
-      let joinDate = `${yyyy}-${mm}-${dd}`;
-      let expireDate;
-      let amount;
-      let id_pengunjung = `${p}${yyyy}${mm}${dd}${hh}${min}${sec}`;
+        let joinDate = `${yyyy}-${mm}-${dd}`;
+        let expireDate;
+        let baseAmount;
 
-      if (type === 'bulanan') {
-        const nextMonth = new Date(today);
-        nextMonth.setMonth(today.getMonth() + 1);
-        const nextMm = String(nextMonth.getMonth() + 1).padStart(2, '0');
-        const nextDd = String(nextMonth.getDate()).padStart(2, '0');
-        expireDate = `${nextMonth.getFullYear()}-${nextMm}-${nextDd}`;
-        amount = "180000";
-      } else if (type === 'harian') {
-        const nextDay = new Date(today);
-        nextDay.setDate(today.getDate() + 1);
-        const nextMm = String(nextDay.getMonth() + 1).padStart(2, '0');
-        const nextDd = String(nextDay.getDate()).padStart(2, '0');
-        expireDate = `${nextDay.getFullYear()}-${nextMm}-${nextDd}`;
-        amount = "20000";
+        // Tentukan tanggal berlaku berdasarkan jenis pengunjung
+        if (type === 'bulanan') {
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(today.getMonth() + 1);
+            const nextMm = String(nextMonth.getMonth() + 1).padStart(2, '0');
+            const nextDd = String(nextMonth.getDate()).padStart(2, '0');
+            expireDate = `${nextMonth.getFullYear()}-${nextMm}-${nextDd}`;
+            baseAmount = 180000;
+        } else if (type === 'harian') {
+            const nextDay = new Date(today);
+            nextDay.setDate(today.getDate() + 1);
+            const nextMm = String(nextDay.getMonth() + 1).padStart(2, '0');
+            const nextDd = String(nextDay.getDate()).padStart(2, '0');
+            expireDate = `${nextDay.getFullYear()}-${nextMm}-${nextDd}`;
+            baseAmount = 20000;
+        }
+
+        // Set tanggal dan ID pengunjung
+        document.getElementById('tgl_bergabung').value = joinDate;
+        document.getElementById('masa_berlaku').value = expireDate;
+        document.getElementById('id_pengunjung_pendaftaran').value = `${p}${yyyy}${mm}${dd}${hh}${min}${sec}`;
+
+        // Simpan jenis pengunjung ke field amount
+        document.getElementById('amount').value = baseAmount;
+
+        // Panggil updateTrainerOption untuk menghitung total harga jika personal trainer dipilih
+        updateTrainerOption();
+    }
+
+    // Tambahkan event listener pada radio button Personal Trainer
+    document.getElementById('flexRadioDefault1').addEventListener('change', updateTrainerOption);
+    document.getElementById('flexRadioDefault2').addEventListener('change', updateTrainerOption);
+
+    // Tambahkan event listener pada radio button Jenis Pengunjung
+    document.querySelectorAll('input[name="value"]').forEach((radio) => {
+        radio.addEventListener('change', (event) => updateDate(event.target.value));
+    });
+
+    function updatePerpanjangan() {
+    const jumlahBulan = parseInt(document.getElementById('jumlah_bulan').value);
+    const biayaPerBulan = 150000; // Biaya per bulan tanpa personal trainer
+    const personalTrainer = document.getElementById('flexRadioDefault1').checked; // True jika "Gunakan"
+    const biayaPersonalTrainerPerBulan = 100000; // Tambahan biaya per bulan untuk personal trainer
+
+    // Hitung total biaya
+    let totalBiaya = jumlahBulan * biayaPerBulan;
+
+    // Tambahkan biaya personal trainer jika dipilih
+    if (personalTrainer) {
+      totalBiaya += jumlahBulan * biayaPersonalTrainerPerBulan;
+    }
+
+    // Tampilkan total biaya di input biaya
+    document.getElementById('biaya').value = totalBiaya;
+
+    // Perbarui masa berlaku
+    const masaBerlakuSebelum = document.getElementById('tanggal_awal').value;
+    const tanggalBaru = new Date(masaBerlakuSebelum);
+    tanggalBaru.setMonth(tanggalBaru.getMonth() + jumlahBulan);
+    const formattedDate = tanggalBaru.toISOString().split('T')[0];
+    document.getElementById('masa_berlaku').value = formattedDate;
+    }
+
+    // Tambahkan event listener untuk perubahan pada jumlah bulan
+    document.getElementById('jumlah_bulan').addEventListener('change', updatePerpanjangan);
+
+    // Tambahkan event listener untuk perubahan pada opsi personal trainer
+    document.getElementById('flexRadioDefault1').addEventListener('change', updatePerpanjangan);
+    document.getElementById('flexRadioDefault2').addEventListener('change', updatePerpanjangan);
+
+    function toggleTrainerDropdown(show) {
+      const trainerDropdown = document.getElementById('trainerDropdown');
+      trainerDropdown.style.display = show ? 'block' : 'none';
+
+      // Reset pilihan dropdown jika opsi "Tidak" dipilih
+      if (!show) {
+        document.getElementById('id_pt').value = "";
       }
-
-      console.log(id_pengunjung);
-
-      document.getElementById('tgl_bergabung').value = joinDate;
-      document.getElementById('masa_berlaku').value = expireDate;
-      document.getElementById('amount').value = amount;
-      document.getElementById('id_pengunjung_pendaftaran').value = id_pengunjung;
-
-
     }
 
   </script>

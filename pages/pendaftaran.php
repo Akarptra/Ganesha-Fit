@@ -35,7 +35,51 @@
         ></textarea>
       </div>
     </div>
-  
+
+    <div class="form-group">
+      <label>Personal Trainer</label><br />
+      <div class="d-flex">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="personal_trainer"
+            id="flexRadioDefault1"
+            value="gunakan"
+            onclick="toggleTrainerDropdown(true)"
+          />
+          <label class="form-check-label" for="flexRadioDefault1">
+            Gunakan
+          </label>
+        </div>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="personal_trainer"
+            id="flexRadioDefault2"
+            value="tidak"
+            checked
+            onclick="toggleTrainerDropdown(false)"
+          />
+          <label class="form-check-label" for="flexRadioDefault2">
+            Tidak
+          </label>
+        </div>
+      </div>
+
+      <!-- Dropdown untuk memilih personal trainer -->
+      <div class="mt-3" id="trainerDropdown" style="display: none;">
+        <label for="id_pt">Pilih Personal Trainer</label>
+        <select class="form-control" id="id_pt" name="id_pt">
+          <option value="PT01">Rusdi (PT01)</option>
+          <option value="PT02">Rusman (PT02)</option>
+        </select>
+      </div>
+    </div>
+
+
+
     <div class="form-group">
       <label class="form-label">Jenis Pengunjung</label>
       <div class="selectgroup w-100">
