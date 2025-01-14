@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
   $query = '
-SELECT pengunjung.id_pengunjung, pengunjung.nama_lengkap, pengunjung.nama_jenis_pengunjung, catatan_kunjungan.tanggal, pengunjung.biaya
-FROM pengunjung
-JOIN catatan_kunjungan ON pengunjung.id_pengunjung = catatan_kunjungan.id_pengunjung
-WHERE catatan_kunjungan.tanggal BETWEEN "'.$startDateFormatted.'" AND "'.$endDateFormatted.'"';
+  SELECT pengunjung.id_pengunjung, pengunjung.nama_lengkap, pengunjung.nama_jenis_pengunjung, catatan_kunjungan.tanggal, pengunjung.biaya
+  FROM pengunjung
+  JOIN catatan_kunjungan ON pengunjung.id_pengunjung = catatan_kunjungan.id_pengunjung
+  WHERE catatan_kunjungan.tanggal BETWEEN "'.$startDateFormatted.'" AND "'.$endDateFormatted.'"';
 
   $result = mysqli_query($conn,$query);
 }

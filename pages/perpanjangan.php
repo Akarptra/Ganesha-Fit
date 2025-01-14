@@ -68,8 +68,6 @@ if (isset($_POST['cari'])) {
     </div>
   </div>
 
-
-
   <div class="card">
     <div class="form-group">
       <input type="hidden" name="id_pengunjung_new" value="<?php echo $id_pengunjung; ?>" />
@@ -87,6 +85,51 @@ if (isset($_POST['cari'])) {
   <input type="hidden" name="tanggal_awal" id="tanggal_awal" value="<?php echo $masa_berlaku_sebelum; ?>" />
 
   <div class="card">
+
+  <div class="form-group">
+      <label>Personal Trainer</label><br />
+      <div class="d-flex">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="personal_trainer"
+            id="flexRadioDefault1"
+            value="gunakan"
+            onclick="toggleTrainerDropdown(true)"
+          />
+          <label class="form-check-label" for="flexRadioDefault1">
+            Gunakan
+          </label>
+        </div>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="personal_trainer"
+            id="flexRadioDefault2"
+            value="tidak"
+            checked
+            onclick="toggleTrainerDropdown(false)"
+          />
+          <label class="form-check-label" for="flexRadioDefault2">
+            Tidak
+          </label>
+        </div>
+      </div>
+
+      <!-- Dropdown untuk memilih personal trainer -->
+      <div class="mt-3" id="trainerDropdown" style="display: none;">
+        <label for="id_pt">Pilih Personal Trainer</label>
+        <select class="form-control" id="id_pt" name="id_pt">
+          <option value="PT01">Rusdi (PT01)</option>
+          <option value="PT02">Rusman (PT02)</option>
+        </select>
+      </div>
+    </div>
+
+  
+
     <div class="form-group">
       <label for="defaultSelect">Lama perpanjangan</label>
       <select class="form-select form-control" id="jumlah_bulan" name="jumlah_bulan">
@@ -130,27 +173,31 @@ if (isset($_POST['cari'])) {
 if (isset($_POST['perpanjang'])) {
   $tanggal_baru = $_POST['tanggal_baru'];
   $id_pengunjung = $_POST['id_pengunjung_new'];
-  
+  $id_pt = isset($_POST['id_pt']) ? $_POST['id_pt'] : NULL; // Tangkap ID personal trainer
+  $biaya = $_POST['total'];
 
   if (empty($id_pengunjung)) {
     echo '<script>showNotification("Gagal", "danger", "ID Pengunjung tidak boleh kosong")</script>';
   } else {
-    
-    if (!empty($_POST['tanggal_baru'])) {
-      $biaya = $_POST['total'];
-      $query = "UPDATE pengunjung SET masa_berlaku = '$tanggal_baru',biaya = '$biaya' WHERE id_pengunjung = '$id_pengunjung';";
+    if (!empty($tanggal_baru)) {
+      // Query untuk memperbarui data pengunjung
+      $query = "UPDATE pengunjung 
+                SET masa_berlaku = '$tanggal_baru', 
+                    biaya = '$biaya', 
+                    id_pt = " . ($id_pt ? "'$id_pt'" : "NULL") . " 
+                WHERE id_pengunjung = '$id_pengunjung';";
 
       if (mysqli_query($conn, $query)) {
         echo '<script>showNotification("Berhasil", "success", "Berhasil perpanjangan")</script>';
       } else {
-        echo '<script>showNotification("Gagal", "danger", "Perpanjangan gagal")</script>';
+        echo '<script>showNotification("Gagal", "danger", "Perpanjangan gagal: ' . mysqli_error($conn) . '")</script>';
       }
-    }else{
-      echo '<script>showNotification("Gagal", "danger", "Perpanjangan gagal")</script>';
+    } else {
+      echo '<script>showNotification("Gagal", "danger", "Perpanjangan gagal: Tanggal baru kosong")</script>';
     }
-
   }
 }
+
 ?>
 
 <script>
